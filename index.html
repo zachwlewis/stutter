@@ -76,17 +76,18 @@
             </div>
           </div>
           <div class="col-md-8">
-            <div id="progress-bar">
+            <div id="progressBarArea">
               <h3 id="progress-header" class="text-muted">Progress Bar</h3>
               <div class="progress">
-                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
                   <span class="sr-only">60% Complete</span>
                 </div>
               </div>
               <hr>
             </div>
-            <h2 id="active-task-name">Active Task</h2>
-            <p id="active-task-description">The description of the active task</p>
+            <a href="#" id="timerButton" class="btn btn-primary btn-block">Begin Phrase</a>
+            <h2 id="activeTaskName">Active Task</h2>
+            <p id="activeTaskDescription">The description of the active task</p>
           </div>
         </div>
         <hr>
@@ -132,7 +133,7 @@
     ================================================== -->
     <script id="task-template" type="text/x-handlebars-template">
       {{#tasks}}
-      <a href="#" class="list-group-item">
+      <a href="#" onclick="selectTask({{@index}})" class="list-group-item">
         <h5>{{name}}</h4>
         <p>{{description}}</p>
       </a>
