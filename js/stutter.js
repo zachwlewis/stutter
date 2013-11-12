@@ -10,13 +10,40 @@ var currentTask;
 var selectedTask;
 var timerID;
 var currentTime = 0;
-var totalPhraseTime = 10;
-var totalBlockTime = 5;
+var totalPhraseTime = 6;
+var totalBlockTime = 3;
 var timerRunning = false;
 var inPhrase = false;
 
 var localTasks = localStorage.getItem("stutterTasks");
 if (localTasks != null) { data = JSON.parse(localTasks); }
+
+// Ignore any selections.
+for (var i = data.tasks.length - 1; i >= 0; i--)
+{
+	if (data.tasks[i] != null)
+	{
+		data.tasks[i].selected = false;
+	}
+	else
+	{
+		console.log("Removed "+JSON.stringify(data.tasks[i])+" from data.tasks.");
+		data.tasks.splice(i,1);
+	}
+}
+
+for (var i = data.completed.length - 1; i >= 0; i--)
+{
+	if (data.completed[i] != null)
+	{
+		data.completed[i].selected = false;
+	}
+	else
+	{
+		console.log("Removed "+JSON.stringify(data.completed[i])+" from data.completed.");
+		data.completed.splice(i,1);
+	}
+}
 
 $( "#confirmTaskButton" ).click(createTask);
 $("#taskModal").on("shown.bs.modal", function() {$("#taskName").focus();});
@@ -30,7 +57,7 @@ function createTask()
 	var taskDescription = $("#taskDescription").val();
 	var newTask = {name: taskName, description: taskDescription};
 	data.tasks.push(newTask);
-	updateTasks(data);
+	updateTasks();
 	$('#taskModal').modal('hide');
 	return false;
 }
@@ -40,11 +67,6 @@ function clearTaskModal()
 	$("#taskName").val("");
 	$("#taskDescription").val("");
 	return false;
-}
-
-function editTask(index)
-{
-
 }
 
 function beginTimer(isBlock)
@@ -156,7 +178,7 @@ function endTimer()
 	timerRunning = false;
 	currentTask = null;
 
-	updateTasks(data);
+	updateTasks();
 }
 
 function completeTask()
@@ -173,7 +195,7 @@ function completeTask()
 		}
 
 		// Redraw
-		updateTasks(data);
+		updateTasks();
 
 		$('#completeButton').removeClass("btn-success");
 		$('#completeButton').addClass("btn-warning");
@@ -198,7 +220,7 @@ function revertTask()
 		}
 
 		// Redraw
-		updateTasks(data);
+		updateTasks();
 
 		$('#completeButton').addClass("btn-success");
 		$('#completeButton').removeClass("btn-warning");
@@ -215,21 +237,108 @@ function setCurrentTime(currentSeconds, totalSeconds)
 
 function selectTask(index)
 {
+	if (selectedTask != null)
+	{
+		selectedTask.selected = false;
+	}
+
 	if (data.tasks[index] != null)
 	{
-		selectedTask = data.tasks[index];
+		// Has the user selected the selected task?
+		if (selectedTask == data.tasks[index])
+		{
+			selectedTask.selected = false;
+			selectedTask = null;
+		}
+		else
+		{
+			selectedTask = data.tasks[index];
+			selectedTask.selected = true;
+		}
 	}
+
+	updateTasks();
 }
 
 function selectCompleted(index)
 {
+	if (selectedTask != null)
+	{
+		selectedTask.selected = false;
+	}
+
 	if (data.completed[index] != null)
 	{
-		selectedTask = data.selected[index];
+		// Has the user selected the selected task?
+		if (selectedTask == data.completed[index])
+		{
+			selectedTask.selected = false;
+			selectedTask = null;
+		}
+		else
+		{
+			selectedTask = data.completed[index];
+			selectedTask.selected = true;
+		}
 	}
+
+	updateTasks();
 }
 
-function updateTasks(dataObjecct)
+function deleteTask(target)
+{
+	var taskIndex = data.tasks.indexOf(target);
+	if (taskIndex < 0)
+	{
+		// The task is completed.
+		taskIndex = data.completed.indexOf(target);
+		data.completed.splice(taskIndex, 1);
+	}
+	else
+	{
+		data.tasks.splice(taskIndex, 1);
+	}
+
+	selectedTask = null;
+	updateTasks();
+}
+
+function editTask(target)
+{
+
+}
+
+function completeSelected(target)
+{
+	// Does the task exist in the tasks list?
+	taskIndex = data.tasks.indexOf(target);
+
+	if (taskIndex >= 0)
+	{
+		data.completed.push(target);
+		data.tasks.splice(taskIndex, 1);
+	}
+
+	// Redraw
+	updateTasks();
+}
+
+function revertSelected(target)
+{
+	// Does the task exist in the completed list?
+	taskIndex = data.completed.indexOf(target);
+
+	if (taskIndex >= 0)
+	{
+		data.tasks.push(target);
+		data.completed.splice(taskIndex, 1);
+	}
+
+	// Redraw
+	updateTasks();
+}
+
+function updateTasks()
 {
 	// Save tasks locally.
 	localStorage.setItem("stutterTasks", JSON.stringify(data));
@@ -247,8 +356,60 @@ function updateTasks(dataObjecct)
 		$('#timerButton').on('click', beginTimer);
 		$('#timerButton').removeClass('disabled');
 	}
+
+	// Remove task management events.
+	$('#completeSelectedButton').unbind("click");
+	$('#editSelectedButton').unbind("click");
+	$('#deleteSelectedButton').unbind("click");
+
+	// Set visuals and events.
+	if (selectedTask != null)
+	{
+		// Is the selected task complete?
+		if (data.tasks.indexOf(selectedTask) >= 0)
+		{
+			$('#completeSelectedButton').html("<i class=\"fa fa-check-square-o\"></i> Complete");
+			$('#completeSelectedButton').click(function() {completeSelected(selectedTask);});
+			$('#completeSelectedButton').addClass("btn-success");
+			$('#completeSelectedButton').removeClass("btn-warning");
+			$('#completeSelectedButton').removeClass("btn-default");
+		}
+		else
+		{
+			$('#completeSelectedButton').html("<i class=\"fa fa-square-o\"></i> Revert");
+			$('#completeSelectedButton').click(function() {revertSelected(selectedTask);});
+			$('#completeSelectedButton').addClass("btn-warning");
+			$('#completeSelectedButton').removeClass("btn-success");
+			$('#completeSelectedButton').removeClass("btn-default");
+		}
+
+		$('#editSelectedButton').click(function() {editTask(selectedTask);});
+
+		$('#deleteSelectedButton').click(function() {deleteTask(selectedTask);});
+		$('#deleteSelectedButton').addClass("btn-danger");
+		$('#deleteSelectedButton').removeClass("btn-default");
+
+		// Enable the buttons.
+		$('#completeSelectedButton').removeClass("disabled");
+		$('#editSelectedButton').removeClass("disabled");
+		$('#deleteSelectedButton').removeClass("disabled");
+	}
+	else
+	{
+		$('#deleteSelectedButton').removeClass("btn-danger");
+		$('#completeSelectedButton').removeClass("btn-success");
+		$('#completeSelectedButton').removeClass("btn-warning");
+		$('#completeSelectedButton').html("<i class=\"fa fa-check-square-o\"></i> Complete");
+
+		// Disable the buttons.
+		$('#completeSelectedButton').addClass("disabled");
+		$('#editSelectedButton').addClass("disabled");
+		$('#deleteSelectedButton').addClass("disabled");
+		$('#completeSelectedButton').addClass("btn-default");
+		$('#deleteSelectedButton').addClass("btn-default");
+	}
 }
 
 // Initial setup.
-updateTasks(data);
+updateTasks();
 

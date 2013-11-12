@@ -85,19 +85,16 @@
               <div class="list-group">
                 <div id="task-placeholder"></div>
               </div>
-              <div class="panel-footer"><a data-toggle="modal" href="#taskModal" class="btn btn-default"><i class="fa fa-plus"></i> Add Task</a></div>
+              <div class="panel-footer">
+                <a id="completeSelectedButton" class="btn btn-default disabled"><i class="fa fa-check-square-o"></i> Complete</a>
+                <a id="editSelectedButton" class="btn btn-default disabled"><i class="fa fa-pencil"></i> Edit</a>
+                <a id="deleteSelectedButton" class="btn btn-default pull-right disabled"><i class="fa fa-trash-o"></i> Delete</a>
             </div>
           </div>
         </div>
       </div>
 
     </div><!-- /#wrap -->
-
-    <div id="footer">
-      <div class="container">
-        <p class="text-muted credit">Stutter is a labor of love by <a href="http://zacharylew.is">Zachary Lewis</a>.</p>
-      </div>
-    </div>
 
     <!-- Modal -->
     <div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -127,19 +124,24 @@
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    <div id="footer">
+      <div class="container">
+        <p class="text-muted credit">Stutter is a labor of love by <a href="http://zacharylew.is">Zachary Lewis</a>.</p>
+      </div>
+    </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <script id="task-template" type="text/x-handlebars-template">
       {{#tasks}}
-      <a href="#" onclick="selectTask({{@index}})" class="list-group-item">
-        <h5>{{name}}</h4>
+      <a href="#" onclick="selectTask({{@index}})" class="list-group-item {{#if selected}}active{{/if}}">
+        <h5>{{name}}</h5>
         <p>{{description}}</p>
       </a>
       {{/tasks}}
       {{#completed}}
-      <a href="#" onclick="selectCompleted({{@index}})" class="list-group-item" style="text-decoration: line-through">
-        <h5>{{name}}</h4>
+      <a href="#" onclick="selectCompleted({{@index}})" class="list-group-item {{#if selected}}active{{/if}}" style="text-decoration: line-through">
+        <h5>{{name}}</h5>
         <p>{{description}}</p>
       </a>
       {{/completed}}
