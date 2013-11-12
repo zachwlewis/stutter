@@ -17,13 +17,19 @@
     <link href="css/sticky-footer-navbar.css" rel="stylesheet">
 
     <!-- Font awesome instead of glyphicons? -->
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="css/font-awesome.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="../../assets/js/html5shiv.js"></script>
       <script src="../../assets/js/respond.min.js"></script>
     <![endif]-->
+
+    <style>
+      #mainControls {
+        margin-bottom: 20px;
+      }
+    </style>
   </head>
 
   <body>
@@ -54,7 +60,23 @@
       <!-- Begin page content -->
       <div class="container">
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-8 col-md-push-4">
+            <div id="mainControls" class="btn-group btn-group-justified">
+              <a href="#" id="timerButton" class="btn btn-primary"><i class="fa fa-play"></i> Begin Phrase</a>
+              <a href="#" id="completeButton" class="btn btn-success"><i class="fa fa-check-square-o"></i> Complete</a>
+            </div>
+            <div id="progressBarArea">
+              <div class="progress">
+                <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                  <span class="sr-only">60% Complete</span>
+                </div>
+              </div>
+              <h2 id="activeTaskName">Active Task</h2>
+              <p id="activeTaskDescription">The description of the active task</p>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-md-pull-8">
             <div class="panel panel-default">
               <!-- Default panel contents -->
               <div class="panel-heading">Tasks</div>
@@ -63,57 +85,13 @@
               <div class="list-group">
                 <div id="task-placeholder"></div>
               </div>
+              <div class="panel-footer"><a data-toggle="modal" href="#taskModal" class="btn btn-default"><i class="fa fa-plus"></i> Add Task</a></div>
             </div>
-          </div>
-          <div class="col-md-8">
-            <div id="progressBarArea">
-              <div class="progress">
-                <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-                <span class="sr-only">60% Complete</span>
-              </div>
-              
-              </div>
-              <h2 id="activeTaskName">Active Task</h2>
-              <p id="activeTaskDescription">The description of the active task</p>
-              <hr>
-            </div>
-            <div class="btn-group btn-group-justified">
-              <a href="#" id="timerButton" class="btn btn-primary"><i class="fa fa-play"></i> Begin Phrase</a>
-              <a href="#" id="completeButton" class="btn btn-success"><i class="fa fa-check-square-o"></i> Complete</a>
-            </div>
-            
           </div>
         </div>
-
-        <!-- Modal -->
-        <div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 id="modalTitle" class="modal-title">New Task</h4>
-              </div>
-              <form role="form">
-                <div class="modal-body">
-                  <div class="form-group">
-                    <label for="taskName">Task</label>
-                    <input type="text" class="form-control input-lg" id="taskName" placeholder="Task name">
-                  </div>
-                  <div class="form-group">
-                    <label for="taskDescription">Description</label>
-                    <input type="text" class="form-control" id="taskDescription" placeholder="A short description of the task.">
-                  </div>
-                </div>
-
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-target="#taskModal" data-dismiss="modal">Cancel</button>
-                  <button id="confirmTaskButton" type="submit" class="btn btn-primary">Create</button>
-                </div>
-              </form>
-            </div><!-- /.modal-content -->
-          </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
       </div>
-    </div>
+
+    </div><!-- /#wrap -->
 
     <div id="footer">
       <div class="container">
@@ -121,18 +99,46 @@
       </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 id="modalTitle" class="modal-title">New Task</h4>
+          </div>
+          <form role="form">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="taskName">Task</label>
+                <input type="text" class="form-control input-lg" id="taskName" placeholder="Task name">
+              </div>
+              <div class="form-group">
+                <label for="taskDescription">Description</label>
+                <input type="text" class="form-control" id="taskDescription" placeholder="A short description of the task.">
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-target="#taskModal" data-dismiss="modal">Cancel</button>
+              <button id="confirmTaskButton" type="submit" class="btn btn-primary">Create</button>
+            </div>
+          </form>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <script id="task-template" type="text/x-handlebars-template">
       {{#tasks}}
-      <a href="#" onclick="selectTask({{@index}})" class="list-group-item" {{#if complete}}style="text-decoration: line-through"{{/if}}>
+      <a href="#" onclick="selectTask({{@index}})" class="list-group-item">
         <h5>{{name}}</h4>
         <p>{{description}}</p>
       </a>
       {{/tasks}}
       {{#completed}}
-      <a href="#" class="list-group-item" style="text-decoration: line-through">
+      <a href="#" onclick="selectCompleted({{@index}})" class="list-group-item" style="text-decoration: line-through">
         <h5>{{name}}</h4>
         <p>{{description}}</p>
       </a>
@@ -145,7 +151,7 @@
     <script src="js/handlebars.js"></script>
     <script src="js/stutter.js"></script>
 
-    <audio id="blockAlertAudio" src="/sounds/block-alert.wav"></audio>    
+    <audio id="blockAlertAudio" src="sounds/block-alert.wav"></audio>    
 
   </body>
 </html>

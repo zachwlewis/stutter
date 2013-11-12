@@ -2,7 +2,12 @@ var source   = $("#task-template").html();
 var template = Handlebars.compile(source);
 var data = { tasks: [], completed: []};
 var currentTaskIndex;
+
+/** The active task. */
 var currentTask;
+
+/** The currently selected task in the list. */
+var selectedTask;
 var timerID;
 var currentTime = 0;
 var totalPhraseTime = 10;
@@ -18,7 +23,6 @@ $("#taskModal").on("shown.bs.modal", function() {$("#taskName").focus();});
 $("#taskModal").on("hidden.bs.modal", clearTaskModal);
 $('#progressBarArea').hide();
 $('#completeButton').hide();
-$('#completeButton').click(completeTask);
 
 function createTask()
 {
@@ -60,6 +64,11 @@ function beginTimer(isBlock)
 	$("#timerButton").off('click', beginTimer);
 	$("#timerButton").on('click', endTimer);
 	$('#completeButton').show();
+	$('#completeButton').addClass("btn-success");
+	$('#completeButton').removeClass("btn-warning");
+	$('#completeButton').html("<i class=\"fa fa-check-square-o\"></i> Complete</a>");
+	$('#completeButton').unbind("click");
+	$('#completeButton').click(completeTask);
 
 	timerRunning = true;
 	currentTime = 0;
@@ -119,7 +128,6 @@ function beginTimer(isBlock)
 
 			$('#activeTaskName').text(currentTask.name);
 			$('#activeTaskDescription').text(currentTask.description);
-			$('#completeButton').removeClass("disabled");
 		}
 	}
 
@@ -147,24 +155,56 @@ function endTimer()
 	inPhrase = false;
 	timerRunning = false;
 	currentTask = null;
+
+	updateTasks(data);
 }
 
 function completeTask()
 {
 	if (currentTask != null)
 	{
-		data.completed.push(currentTask);
+		// Does the task exist in the tasks list?
 		taskIndex = data.tasks.indexOf(currentTask);
-		data.tasks.splice(taskIndex, 1);
 
-		// Prevent mutiple adds of completed tasks.
-		currentTask = null;
+		if (taskIndex >= 0)
+		{
+			data.completed.push(currentTask);
+			data.tasks.splice(taskIndex, 1);
+		}
 
 		// Redraw
 		updateTasks(data);
-		$('#completeButton').addClass("disabled");
 
+		$('#completeButton').removeClass("btn-success");
+		$('#completeButton').addClass("btn-warning");
+		$('#completeButton').html("<i class=\"fa fa-square-o\"></i> Undo</a>");
+		$('#completeButton').unbind("click");
+		$('#completeButton').click(revertTask);
 		// TODO: Should we stop the timer?
+	}
+}
+
+function revertTask()
+{
+	if (currentTask != null)
+	{
+		// Does the task exist in the completed list?
+		taskIndex = data.completed.indexOf(currentTask);
+
+		if (taskIndex >= 0)
+		{
+			data.tasks.push(currentTask);
+			data.completed.splice(taskIndex, 1);
+		}
+
+		// Redraw
+		updateTasks(data);
+
+		$('#completeButton').addClass("btn-success");
+		$('#completeButton').removeClass("btn-warning");
+		$('#completeButton').html("<i class=\"fa fa-check-square-o\"></i> Complete</a>");
+		$('#completeButton').unbind("click");
+		$('#completeButton').click(completeTask);
 	}
 }
 
@@ -177,9 +217,15 @@ function selectTask(index)
 {
 	if (data.tasks[index] != null)
 	{
-		currentTask = data.tasks[index];
-		$('#activeTaskName').text(currentTask.name);
-		$("#activeTaskDescription").text(currentTask.description);
+		selectedTask = data.tasks[index];
+	}
+}
+
+function selectCompleted(index)
+{
+	if (data.completed[index] != null)
+	{
+		selectedTask = data.selected[index];
 	}
 }
 
@@ -190,14 +236,15 @@ function updateTasks(dataObjecct)
 
 	// Render with Handlebars.
 	$("#task-placeholder").html(template(data));
-	if (data.tasks.length == 0)
+
+	if (data.tasks.length == 0 && currentTask == null)
 	{
 		$('#timerButton').addClass('disabled');
 	}
 	else if (!timerRunning)
 	{
-		$("#timerButton").off('click', beginTimer);
-		$("#timerButton").on('click', beginTimer);
+		$('#timerButton').off('click', beginTimer);
+		$('#timerButton').on('click', beginTimer);
 		$('#timerButton').removeClass('disabled');
 	}
 }
