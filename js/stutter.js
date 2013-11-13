@@ -46,8 +46,8 @@ for (var i = data.completed.length - 1; i >= 0; i--)
 }
 
 $( "#confirmTaskButton" ).click(createTask);
-$("#taskModal").on("shown.bs.modal", function() {$("#taskName").focus();});
-$("#taskModal").on("hidden.bs.modal", clearTaskModal);
+$("#taskModal").on("shown.bs.modal", function() { $('#taskName').focus(); });
+$("#taskModal").on("hidden.bs.modal", function() { clearTaskModal(); });
 $('#progressBarArea').hide();
 $('#completeButton').hide();
 
@@ -356,6 +356,21 @@ function updateTasks()
 		$('#timerButton').on('click', beginTimer);
 		$('#timerButton').removeClass('disabled');
 	}
+
+	// Update add task button based on task queue.
+	if (data.tasks.length + data.completed.length == 0)
+	{
+		$('#newTaskButton').addClass("btn-primary");
+		$('#newTaskButton').removeClass("btn-default");
+	}
+	else
+	{
+		$('#newTaskButton').addClass("btn-default");
+		$('#newTaskButton').removeClass("btn-primary");
+	}
+
+	// Update active tasks count
+	$('#taskCountBadge').html(data.tasks.length);
 
 	// Remove task management events.
 	$('#completeSelectedButton').unbind("click");

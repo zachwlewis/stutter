@@ -40,29 +40,16 @@
   </head>
 
   <body>
-
     <!-- Wrap all page content here -->
     <div id="wrap">
-
+      
       <!-- Fixed navbar -->
-      <div class="navbar navbar-default navbar-fixed-top">
+      <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#"><img class="stutterLogo" src="img/stutter-logo-256.png" width="48" height="48"> Stutter</a>
-          </div>
-
-          <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-              <li class="active"><a data-toggle="modal" href="#taskModal"><i class="fa fa-plus"></i> Add Task</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
+          <a class="navbar-brand" href="#"><img class="stutterLogo" src="img/stutter-logo-256.png" width="48" height="48"> Stutter</a>
+          <a id="newTaskButton" class="btn btn-primary navbar-btn pull-right" data-toggle="modal" href="#taskModal"><i class="fa fa-plus"></i> New Task</a>
         </div>
-      </div>
+      </nav>
 
       <!-- Begin page content -->
       <div class="container">
@@ -78,15 +65,20 @@
                   <span class="sr-only">60% Complete</span>
                 </div>
               </div>
-              <h2 id="activeTaskName">Active Task</h2>
-              <p id="activeTaskDescription">The description of the active task</p>
+              <div class="well">
+                <h3 id="activeTaskName">Active Task</h3>
+                <p id="activeTaskDescription">The description of the active task</p>
+              </div>
             </div>
           </div>
 
           <div class="col-md-4 col-md-pull-8">
             <div class="panel panel-default">
               <!-- Default panel contents -->
-              <div class="panel-heading">Tasks</div>
+              <div class="panel-heading clearfix">
+                <h3 class="panel-title pull-left">Tasks</h3>
+                <span id="taskCountBadge" class="badge pull-right">0</span>
+              </div>
 
               <!-- List group -->
               <div class="list-group">
@@ -101,56 +93,56 @@
           </div>
         </div>
       </div>
-
-      <!-- Modal -->
-      <div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 id="modalTitle" class="modal-title">New Task</h4>
-            </div>
-            <form role="form">
-              <div class="modal-body">
-                <div class="form-group">
-                  <label for="taskName">Task</label>
-                  <input type="text" class="form-control input-lg" id="taskName" placeholder="Task name">
-                </div>
-                <div class="form-group">
-                  <label for="taskDescription">Description</label>
-                  <input type="text" class="form-control" id="taskDescription" placeholder="A short description of the task.">
-                </div>
-              </div>
-
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-target="#taskModal" data-dismiss="modal">Cancel</button>
-                <button id="confirmTaskButton" type="submit" class="btn btn-primary">Create</button>
-              </div>
-            </form>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
-
     </div><!-- /#wrap -->
 
     <div id="footer">
       <div class="container">
-        <p class="text-muted credit">Stutter is a labor of love by <a href="http://zacharylew.is">Zachary Lewis</a>.</p>
-        <audio id="blockAlertAudio" src="sounds/block-alert.wav"></audio>
+        <p class="text-muted credit pull-right">A <a href="http://zacharylew.is">ZACHARY LEWIS</a> JOINT</p>
       </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 id="modalTitle" class="modal-title">New Task</h4>
+          </div>
+          <form role="form">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="taskName">Task</label>
+                <input type="text" class="form-control input-lg" id="taskName" placeholder="Task name">
+              </div>
+              <div class="form-group">
+                <label for="taskDescription">Description</label>
+                <input type="text" class="form-control" id="taskDescription" placeholder="A short description of the task.">
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-target="#taskModal" data-dismiss="modal">Cancel</button>
+              <button id="confirmTaskButton" type="submit" class="btn btn-primary">Create</button>
+            </div>
+          </form>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <audio id="blockAlertAudio" src="sounds/block-alert.wav"></audio>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <script id="task-template" type="text/x-handlebars-template">
       {{#tasks}}
       <a href="#" onclick="selectTask({{@index}})" class="list-group-item {{#if selected}}active{{/if}}">
-        <h5>{{name}}</h5>
-        <p>{{description}}</p>
+        <b>{{name}}</b>
+        {{description}}
       </a>
       {{/tasks}}
       {{#completed}}
       <a href="#" onclick="selectCompleted({{@index}})" class="list-group-item {{#if selected}}active{{/if}}" style="text-decoration: line-through">
-        <h5>{{name}}</h5>
+        <b>{{name}}</b>
         <p>{{description}}</p>
       </a>
       {{/completed}}

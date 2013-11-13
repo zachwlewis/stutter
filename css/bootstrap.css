@@ -4516,8 +4516,8 @@ a.list-group-item:focus {
 .panel-heading {
   padding: 10px 15px;
   border-bottom: 1px solid transparent;
-  border-top-right-radius: 3px;
-  border-top-left-radius: 3px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
 }
 .panel-title {
   margin-top: 0;
@@ -5093,9 +5093,9 @@ body.modal-open,
   opacity: 0;
   filter: alpha(opacity=0);
 }
-.modal-backdrop.in {
-  opacity: 0.5;
-  filter: alpha(opacity=50);
+.modal-backdrop.fade.in {
+  opacity: 0.8;
+  filter: alpha(opacity=80);
 }
 .modal-header {
   padding: 15px;
