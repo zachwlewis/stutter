@@ -10,8 +10,8 @@ var currentTask;
 var selectedTask;
 var timerID;
 var currentTime = 0;
-var totalPhraseTime = 6;
-var totalBlockTime = 3;
+var totalPhraseTime = 1500; // 25 minutes
+var totalBlockTime = 300; // 5 minutes
 var timerRunning = false;
 var inPhrase = false;
 

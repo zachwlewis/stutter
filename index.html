@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.png">
+    <link rel="shortcut icon" href="img/stutter-logo-16.png">
 
     <title>Stutter</title>
 
@@ -29,7 +29,14 @@
       #mainControls {
         margin-bottom: 20px;
       }
+
+      .navbar-brand .stutterLogo
+      {
+        margin-top: -20px;
+        margin-bottom: -18px;
+      }
     </style>
+
   </head>
 
   <body>
@@ -46,7 +53,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Stutter</a>
+            <a class="navbar-brand" href="#"><img class="stutterLogo" src="img/stutter-logo-48.png"> Stutter</a>
           </div>
 
           <div class="collapse navbar-collapse">
@@ -89,44 +96,46 @@
                 <a id="completeSelectedButton" class="btn btn-default disabled"><i class="fa fa-check-square-o"></i> Complete</a>
                 <a id="editSelectedButton" class="btn btn-default disabled"><i class="fa fa-pencil"></i> Edit</a>
                 <a id="deleteSelectedButton" class="btn btn-default pull-right disabled"><i class="fa fa-trash-o"></i></a>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Modal -->
+      <div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 id="modalTitle" class="modal-title">New Task</h4>
+            </div>
+            <form role="form">
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="taskName">Task</label>
+                  <input type="text" class="form-control input-lg" id="taskName" placeholder="Task name">
+                </div>
+                <div class="form-group">
+                  <label for="taskDescription">Description</label>
+                  <input type="text" class="form-control" id="taskDescription" placeholder="A short description of the task.">
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-target="#taskModal" data-dismiss="modal">Cancel</button>
+                <button id="confirmTaskButton" type="submit" class="btn btn-primary">Create</button>
+              </div>
+            </form>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
     </div><!-- /#wrap -->
-
-    <!-- Modal -->
-    <div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 id="modalTitle" class="modal-title">New Task</h4>
-          </div>
-          <form role="form">
-            <div class="modal-body">
-              <div class="form-group">
-                <label for="taskName">Task</label>
-                <input type="text" class="form-control input-lg" id="taskName" placeholder="Task name">
-              </div>
-              <div class="form-group">
-                <label for="taskDescription">Description</label>
-                <input type="text" class="form-control" id="taskDescription" placeholder="A short description of the task.">
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-target="#taskModal" data-dismiss="modal">Cancel</button>
-              <button id="confirmTaskButton" type="submit" class="btn btn-primary">Create</button>
-            </div>
-          </form>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
 
     <div id="footer">
       <div class="container">
         <p class="text-muted credit">Stutter is a labor of love by <a href="http://zacharylew.is">Zachary Lewis</a>.</p>
+        <audio id="blockAlertAudio" src="sounds/block-alert.wav"></audio>
       </div>
     </div>
 
@@ -152,8 +161,5 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/handlebars.js"></script>
     <script src="js/stutter.js"></script>
-
-    <audio id="blockAlertAudio" src="sounds/block-alert.wav"></audio>    
-
   </body>
 </html>
