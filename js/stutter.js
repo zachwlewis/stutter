@@ -1,10 +1,12 @@
 var source   = $("#task-template").html();
 var template = Handlebars.compile(source);
 var data = { tasks: [], completed: []};
-var currentTaskIndex;
+
 
 /** The active task. */
 var currentTask;
+/** The index of the active task. */
+var currentTaskIndex;
 
 /** The currently selected task in the list. */
 var selectedTask;
@@ -52,7 +54,7 @@ for (var i = data.completed.length - 1; i >= 0; i--)
 	}
 }
 
-$('#confirmTaskButton').click(createTask);
+$('#taskModal form').submit(function(event) { createTask(); event.preventDefault(); });
 $('#taskModal').on("shown.bs.modal", function() { $('#taskName').focus(); });
 $('#taskModal').on("hidden.bs.modal", function() { clearTaskModal(); });
 $('#progressBarArea').hide();
@@ -65,18 +67,30 @@ function createTask()
 {
 	var taskName = $("#taskName").val();
 	var taskDescription = $("#taskDescription").val();
-	var newTask = {name: taskName, description: taskDescription};
-	data.tasks.push(newTask);
-	updateTasks();
-	$('#taskModal').modal('hide');
-	return false;
+
+	if (taskName == "")
+	{
+		// Display an error.
+		$('#taskNameGroup').addClass("has-error");
+		$('#taskNameGroup .help-block').remove();
+		$('#taskNameGroup').append("<span class=\"help-block\">A name is required for the task.</span>");
+	}
+	else
+	{
+		var newTask = {name: taskName, description: taskDescription};
+		data.tasks.push(newTask);
+		updateTasks();
+
+		$('#taskModal').modal('hide');
+	}
 }
 
 function clearTaskModal()
 {
 	$("#taskName").val("");
 	$("#taskDescription").val("");
-	return false;
+	$('#taskNameGroup').removeClass("has-error");
+	$('#taskNameGroup .help-block').remove();
 }
 
 function beginTimer(isBlock)
@@ -95,12 +109,6 @@ function beginTimer(isBlock)
 	$('#timerButton').html("<i class=\"fa fa-stop\"></i> End Phrase");
 	$("#timerButton").off('click', beginTimer);
 	$("#timerButton").on('click', endTimer);
-	$('#completeButton').show();
-	$('#completeButton').addClass("btn-success");
-	$('#completeButton').removeClass("btn-warning");
-	$('#completeButton').html("<i class=\"fa fa-check-square-o\"></i> Complete</a>");
-	$('#completeButton').unbind("click");
-	$('#completeButton').click(completeTask);
 
 	timerRunning = true;
 	currentTime = 0;
@@ -141,7 +149,7 @@ function beginTimer(isBlock)
 		progressBar.removeClass("progress-bar-danger");
 		progressBar.css("width", "0%");
 		inPhrase = true;
-
+		var currentIndex;
 		// Select a task to begin working on.
 		if (data.tasks.length > 0)
 		{
@@ -151,15 +159,21 @@ function beginTimer(isBlock)
 				var newTask;
 				do
 				{
-					newTask = data.tasks[Math.floor(Math.random() * data.tasks.length)];
+					currentTaskIndex = Math.floor(Math.random() * data.tasks.length);
+					newTask = data.tasks[currentTaskIndex];
 				} while (newTask == currentTask);
 
 				currentTask = newTask;
 			}
 			else
 			{
-				currentTask = data.tasks[Math.floor(Math.random() * data.tasks.length)];
+				currentTaskIndex = Math.floor(Math.random() * data.tasks.length);
+				currentTask = data.tasks[currentTaskIndex];
 			}
+
+			// Mark task as active.
+			$('#taskList .current-task').removeClass("current-task");
+			$('#taskList a:nth-child('+(currentTaskIndex + 1)+')').addClass("current-task");
 
 			$('#activeTaskName').text(currentTask.name);
 			$('#activeTaskDescription').text(currentTask.description);
@@ -183,7 +197,6 @@ function endTimer()
 
 	// Hide the progress bar area.
 	$('#progressBarArea').slideUp(200);
-	$('#completeButton').hide();
 
 	$('#progressBar').removeClass("progress-bar-danger");
 
@@ -210,11 +223,6 @@ function completeTask()
 		// Redraw
 		updateTasks();
 
-		$('#completeButton').removeClass("btn-success");
-		$('#completeButton').addClass("btn-warning");
-		$('#completeButton').html("<i class=\"fa fa-square-o\"></i> Undo</a>");
-		$('#completeButton').unbind("click");
-		$('#completeButton').click(revertTask);
 		// TODO: Should we stop the timer?
 	}
 }
@@ -415,6 +423,12 @@ function updateTasks()
 		$('#timerButton').off('click', beginTimer);
 		$('#timerButton').on('click', beginTimer);
 		$('#timerButton').removeClass('disabled');
+	}
+	else
+	{
+		// Mark task as active.
+		$('#taskList .current-task').removeClass("current-task");
+		$('#taskList a:nth-child('+(currentTaskIndex + 1)+')').addClass("current-task");
 	}
 
 	// Update add task button based on task queue.
