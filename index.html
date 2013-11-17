@@ -38,6 +38,11 @@
       #settingsButton {
         margin-left: 6px;
       }
+
+      .panel > .list-group .list-group-item.current-task {
+        border-left-width: 5px;
+        border-left-color: #428bca;
+      }
     </style>
 
   </head>
@@ -59,9 +64,8 @@
       <div class="container">
         <div class="row">
           <div class="col-md-8 col-md-push-4">
-            <div id="mainControls" class="btn-group btn-group-justified">
-              <a href="#" id="timerButton" class="btn btn-primary"><i class="fa fa-play"></i> Begin Phrase</a>
-              <a href="#" id="completeButton" class="btn btn-success"><i class="fa fa-check-square-o"></i> Complete</a>
+            <div id="mainControls">
+              <a href="#" id="timerButton" class="btn btn-primary btn-block"><i class="fa fa-play"></i> Begin Phrase</a>
             </div>
             <div id="progressBarArea">
               <div class="progress">
@@ -85,7 +89,7 @@
               </div>
 
               <!-- List group -->
-              <div class="list-group">
+              <div class="list-group" id="taskList">
                 <div id="task-placeholder"></div>
               </div>
               <div class="panel-footer">
@@ -114,7 +118,7 @@
           </div>
           <form role="form">
             <div class="modal-body">
-              <div class="form-group">
+              <div class="form-group" id="taskNameGroup">
                 <label for="taskName">Task</label>
                 <input type="text" class="form-control input-lg" id="taskName" placeholder="Task name">
               </div>
@@ -181,13 +185,13 @@
     ================================================== -->
     <script id="task-template" type="text/x-handlebars-template">
       {{#tasks}}
-      <a href="#" onclick="selectTask({{@index}})" class="list-group-item {{#if selected}}active{{/if}}">
+      <a href="#" onclick="selectTask({{@index}})" class="list-group-item{{#if selected}} active{{/if}}">
         <b>{{name}}</b>
         {{description}}
       </a>
       {{/tasks}}
       {{#completed}}
-      <a href="#" onclick="selectCompleted({{@index}})" class="list-group-item {{#if selected}}active{{/if}}" style="text-decoration: line-through">
+      <a href="#" onclick="selectCompleted({{@index}})" class="list-group-item{{#if selected}} active{{/if}}" style="text-decoration: line-through">
         <b>{{name}}</b>
         <p>{{description}}</p>
       </a>
