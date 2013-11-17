@@ -10,10 +10,17 @@ var currentTask;
 var selectedTask;
 var timerID;
 var currentTime = 0;
-var totalPhraseTime = 1500; // 25 minutes
-var totalBlockTime = 300; // 5 minutes
+
 var timerRunning = false;
 var inPhrase = false;
+
+// Settings
+/** Should a sound be played when a phrase is up? */
+var playSound = true;
+/** The length of a phrase in seconds. */
+var totalPhraseTime = 1500; // 25 minutes
+/** The length of a block in seconds. */
+var totalBlockTime = 300; // 5 minutes
 
 var localTasks = localStorage.getItem("stutterTasks");
 if (localTasks != null) { data = JSON.parse(localTasks); }
@@ -45,11 +52,14 @@ for (var i = data.completed.length - 1; i >= 0; i--)
 	}
 }
 
-$( "#confirmTaskButton" ).click(createTask);
-$("#taskModal").on("shown.bs.modal", function() { $('#taskName').focus(); });
-$("#taskModal").on("hidden.bs.modal", function() { clearTaskModal(); });
+$('#confirmTaskButton').click(createTask);
+$('#taskModal').on("shown.bs.modal", function() { $('#taskName').focus(); });
+$('#taskModal').on("hidden.bs.modal", function() { clearTaskModal(); });
 $('#progressBarArea').hide();
 $('#completeButton').hide();
+$('#playAlertControl').change(function() { updateSettings(); });
+$('#phraseLengthControl').change(function() { updateSettings(); });
+$('#blockLengthControl').change(function() { updateSettings(); });
 
 function createTask()
 {
@@ -120,7 +130,10 @@ function beginTimer(isBlock)
 		progressBar.css("width", "100%");
 		inPhrase = false;
 
-		document.getElementById('blockAlertAudio').play();
+		if (playSound)
+		{
+			document.getElementById('blockAlertAudio').play();
+		}
 	}
 	else
 	{
@@ -338,6 +351,35 @@ function revertSelected(target)
 	updateTasks();
 }
 
+function updateSettings()
+{
+	// Grab data from the controls.
+	playSound = $('#playAlertControl').is(":checked");
+	totalPhraseTime = $('#phraseLengthControl option:selected').val();
+	totalBlockTime = $('#blockLengthControl option:selected').val();
+
+	// Store data locally.
+	localStorage.setItem("playSound", playSound);
+	localStorage.setItem("phraseLength", totalPhraseTime);
+	localStorage.setItem("blockLength", totalBlockTime);
+}
+
+function loadSettings()
+{
+	var localPlaySound = localStorage.getItem("playSound");
+	var localPhraseLength = localStorage.getItem("phraseLength");
+	var localBlockLength = localStorage.getItem("blockLength");
+
+	if (localPlaySound != null) { playSound = localPlaySound; }
+	if (localPhraseLength != null) { totalPhraseTime = localPhraseLength; }
+	if (localBlockLength != null) { totalBlockTime = localBlockLength; }
+
+	// Update settings on controls.
+	$('#playAlertControl').prop('checked', playSound);
+	$('#phraseLengthControl').val(totalPhraseTime);
+	$('#blockLengthControl').val(totalBlockTime);
+}
+
 function updateTasks()
 {
 	// Save tasks locally.
@@ -426,5 +468,6 @@ function updateTasks()
 }
 
 // Initial setup.
+loadSettings();
 updateTasks();
 
