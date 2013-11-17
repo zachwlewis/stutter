@@ -380,6 +380,24 @@ function loadSettings()
 	$('#blockLengthControl').val(totalBlockTime);
 }
 
+function initializeTutorial()
+{
+	// Tutorial steps
+	$('#newTaskButton').popover({placement: "bottom", content:"Add a new task to get started!"});
+	$('#confirmTaskButton').popover({placement: "bottom", content:"Enter a name for your task and create that bad boy."});
+	$('#timerButton').popover({placement: "bottom", content:"Once you've finished creating tasks, begin your first phrase and start working!"});
+	
+	// Set actions to show the tutorial steps.
+	$('#newTaskButton').popover('show');
+	$('#taskModal').on("shown.bs.modal", function() { $('#confirmTaskButton').popover('show'); });
+	$('#taskModal').on("hidden.bs.modal", function() { $('#timerButton').popover('show'); });
+
+	// Set actions to destroy the tutorial steps.
+	$('#newTaskButton').one("click", function() { $('#newTaskButton').popover('destroy'); });
+	$('#taskModal').one("hide.bs.modal", function() { $('#confirmTaskButton').popover('destroy'); });
+	$('#timerButton').one("click", function() { $('#timerButton').popover('destroy'); });
+}
+
 function updateTasks()
 {
 	// Save tasks locally.
@@ -470,4 +488,5 @@ function updateTasks()
 // Initial setup.
 loadSettings();
 updateTasks();
+if (data.tasks.length == 0 && data.completed.length == 0) { initializeTutorial(); }
 
